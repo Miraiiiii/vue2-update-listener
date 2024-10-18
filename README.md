@@ -3,7 +3,7 @@
  * @Author: 舌红
  * @Date: 2024-02-28 09:47:49
  * @LastEditors: 舌红
- * @LastEditTime: 2024-02-28 11:20:42
+ * @LastEditTime: 2024-10-18 14:21:46
 -->
 # vue2-update-listener
 
@@ -40,3 +40,4 @@ Vue.use(UpdateListenerLoader, {
 | modalProps.mountedEl | Element | 弹窗挂载节点，默认为body |
 | type | String | 弹窗样式类型，默认为'qingmu', 可选值为'element'、'qingmu'、'custom'(暂不支持) |
 | showTest | Boolean | 弹窗常显测试 |
+| refreshSameOrigin | Boolean | 是否刷新同源页面，默认为true |

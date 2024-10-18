@@ -3,13 +3,14 @@
  * @Author: 舌红
  * @Date: 2024-02-28 09:47:37
  * @LastEditors: 舌红
- * @LastEditTime: 2024-02-28 11:19:07
+ * @LastEditTime: 2024-05-27 19:06:41
  */
 const { defineConfig } = require('@vue/cli-service')
 
 const timeStamp = new Date().getTime()
 module.exports = defineConfig({
   transpileDependencies: true,
+  productionSourceMap: false,
   publicPath: './',
   outputDir: 'lib',
   assetsDir: 'static',
