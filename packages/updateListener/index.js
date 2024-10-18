@@ -3,7 +3,7 @@
  * @Author: 舌红
  * @Date: 2024-01-09 17:38:09
  * @LastEditors: 舌红
- * @LastEditTime: 2024-05-27 19:05:11
+ * @LastEditTime: 2024-10-18 17:03:27
  */
 
 import { openConfirm } from './components/confirm/confirm'
@@ -33,6 +33,7 @@ const ListenVersion = {
     let isStop = false
 
     if (options.refreshSameOrigin) {
+      localStorage.removeItem('refreshPage')
       window.addEventListener('storage', function(event) {
         if (event.key === 'refreshPage' && event.newValue === 'true') {
           localStorage.removeItem('refreshPage')
@@ -53,8 +54,10 @@ const ListenVersion = {
 
     // 检查是否有新版本
     const checkUpdate = async () => {
-      const commitHash = (await getVersion()).commitHash
-      return commitHash !== currebtVersion
+      const currentVersionInfo = await getVersion()
+      const commitHash = currentVersionInfo.commitHash
+      console.log('当前版本：', commitHash)
+      return commitHash !== currebtVersion && currentVersionInfo.isTip
     }
 
     // 停止检查更新
@@ -65,25 +68,33 @@ const ListenVersion = {
       }
     }
 
-    const handleListen = async (versionInfo) => {
+    const handleListen = async () => {
+      stopUpdate()
       isUpdate = options.showTest || (await checkUpdate())
       // 判断versionInfo.message是否有--no-tip字符，如果有则不提示更新
-      if ((isUpdate && versionInfo.isTip) || options.showTest) {
+      if (isUpdate || options.showTest) {
         stopUpdate()
         await callConfirm()
+      } else {
+        setListenInterval()
       }
     }
 
     // 开始检查更新
     const startListen = async (immediate = false) => {
       if (!options.showTest && (options.isTip === false || isStop)) return
-      const versionInfo = await getVersion()
-      if (!versionInfo || isUpdate) return
-      if (!immediate) {
+      if (immediate) {
+        await handleListen()
+      } else {
+        const versionInfo = await getVersion()
+        if (!versionInfo || isUpdate) return
         currebtVersion = versionInfo.commitHash
+        setListenInterval()
       }
-      immediate && await handleListen(versionInfo)
-      setInterValId = setInterval(async () => (await handleListen(versionInfo)), options.interval || 5 * 60 * 1000)
+    }
+
+    const setListenInterval = () => {
+      setInterValId = setInterval(handleListen, options.interval || 5 * 60 * 1000)
     }
 
     const callConfirm = async () => {
